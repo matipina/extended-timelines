@@ -185,6 +185,12 @@ watch(
 .new-event .timeline-text {
   color: #7ecfff;
 }
+.new-event .event-title {
+  color: #7ecfff;
+}
+.new-event .date {
+  color: #7ecfff;
+}
 .insertion-indicator {
   display: flex;
   justify-content: center;

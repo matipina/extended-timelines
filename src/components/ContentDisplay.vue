@@ -130,4 +130,19 @@ p {
   opacity: 0;
   filter: blur(8px);
 }
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #7ecfff;
+  border-top: 3px solid #232323;
+  border-radius: 50%;
+  animation: spin 0.7s cubic-bezier(.6,.1,.4,.9) infinite;
+  display: inline-block;
+  background: transparent;
+  margin-right: 4px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>

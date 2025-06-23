@@ -1,5 +1,6 @@
 <template>
   <div class="app-layout">
+    <WelcomeOverlay v-if="showWelcome" @close="handleWelcomeClose" />
     <ArticleNav 
       :articles="articles" 
       :selected-index="selectedArticleIndex" 
@@ -8,18 +9,9 @@
       :isRefreshing="isLoading" 
     />
     <main class="content-area">
-      <div v-if="isLoading && isManualRefresh" class="loading-indicator loading-fetch">
-        <span class="fetch-spinner"></span>
-        <span class="fetch-text">Fetching new articles...</span>
-      </div>
-      <div v-else-if="isLoading && isInitialLoad" class="loading-indicator loading-initial">
-        <span class="fetch-spinner"></span>
-        <span class="fetch-text">Loading articles...</span>
-      </div>
-      <div v-else-if="isLoading && !isInitialLoad && !isManualRefresh" class="loading-indicator loading-timeline">
-        <span class="fetch-spinner"></span>
-        <span class="fetch-text">Generating timeline...</span>
-      </div>
+      <LoadingIndicator v-if="isLoading && isManualRefresh" message="Fetching new articles..." variant="fetch" />
+      <LoadingIndicator v-else-if="isLoading && isInitialLoad" message="Loading articles..." variant="initial" />
+      <LoadingIndicator v-else-if="isLoading && !isInitialLoad && !isManualRefresh" message="Generating timeline..." variant="timeline" />
       <div v-else-if="!isLoading && !isInitialLoad && articles.length === 0" class="fallback-message">
         Could not find any articles with timeline events. Please try refreshing again.
       </div>
@@ -47,213 +39,32 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { useTimelineApp } from './composables/useTimelineApp.js';
 import ArticleNav from "./components/ArticleNav.vue";
 import TimelineNav from "./components/TimelineNav.vue";
 import ContentDisplay from "./components/ContentDisplay.vue";
+import WelcomeOverlay from "./components/WelcomeOverlay.vue";
+import LoadingIndicator from "./components/LoadingIndicator.vue";
 
-// --- STATE MANAGEMENT ---
-const articles = ref([]);
-const selectedArticleIndex = ref(-1);
-const selectedEventIndex = ref(0);
-const timelineData = ref(null);
-const isLoading = ref(false);
-const isRemixing = ref(false);
-const extendDirection = ref(null);
-const timelines = ref({}); // Cache timelines by article title
-const isManualRefresh = ref(false);
-const isInitialLoad = ref(true);
-
-// --- COMPUTED PROPERTIES ---
-const selectedEvent = computed(() => {
-  if (timelineData.value && timelineData.value.events) {
-    return timelineData.value.events[selectedEventIndex.value];
-  }
-  return null;
-});
-
-// --- METHODS ---
-const handleArticleSelect = async (directionOrIndex) => {
-  let newIndex;
-
-  if (typeof directionOrIndex === 'string') {
-    // Handling 'prev' and 'next' from the arrows
-    const currentIndex = selectedArticleIndex.value;
-    if (directionOrIndex === 'next') {
-      newIndex = (currentIndex + 1) % articles.value.length;
-    } else { // 'prev'
-      newIndex = (currentIndex - 1 + articles.value.length) % articles.value.length;
-    }
-  } else {
-    // Handling direct click (if you add that functionality back)
-    newIndex = directionOrIndex;
-  }
-
-  // Prevent re-fetching if the index hasn't changed
-  if (selectedArticleIndex.value === newIndex) return;
-
-  selectedArticleIndex.value = newIndex;
-  selectedEventIndex.value = 0; // Always reset to the first event
-  isLoading.value = true;
-  timelineData.value = null;
-
-  const article = articles.value[newIndex];
-  const cacheKey = article.title;
-  if (timelines.value[cacheKey]) {
-    timelineData.value = JSON.parse(JSON.stringify(timelines.value[cacheKey]));
-    isLoading.value = false;
-    return;
-  }
-
-  try {
-    const response = await fetch("/api/generateTimeline", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ articleText: article.content }),
-    });
-    if (!response.ok) throw new Error("API request failed");
-    const data = await response.json();
-    if (data.events && data.events.length > 0) {
-      timelineData.value = data;
-      timelines.value[cacheKey] = JSON.parse(JSON.stringify(data));
-    } else {
-      timelineData.value = null;
-      // No alert, just clear timeline
-    }
-  } catch (error) {
-    console.error("Failed to fetch timeline:", error);
-    // Optionally set an error state to show in the UI
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const handleEventSelect = (index) => {
-  selectedEventIndex.value = index;
-};
-
-const remixTimeline = async () => {
-  if (!timelineData.value) return;
-  const events = timelineData.value.events;
-  for (let i = events.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [events[i], events[j]] = [events[j], events[i]];
-  }
-  selectedEventIndex.value = 0;
-  isRemixing.value = true;
-  try {
-    const subject = articles.value[selectedArticleIndex.value]?.title || "";
-    const shuffledSummaries = events.map(e => e.summary).join(", ");
-    const response = await fetch("/api/remixTimeline", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shuffledSummaries, subject }),
-    });
-    if (!response.ok) throw new Error("API request failed");
-    const data = await response.json();
-    timelineData.value.overall_summary = data.summary;
-    // Update cache with the remixed timeline
-    const cacheKey = articles.value[selectedArticleIndex.value]?.title;
-    if (cacheKey) {
-      timelines.value[cacheKey] = JSON.parse(JSON.stringify(timelineData.value));
-    }
-  } catch (error) {
-    console.error("Failed to remix summary:", error);
-  } finally {
-    isRemixing.value = false;
-  }
-};
-
-const handleExtend = async (direction) => {
-  extendDirection.value = direction;
-  if (!timelineData.value) return;
-  const events = timelineData.value.events;
-  const summary = timelineData.value.overall_summary;
-  const subject = articles.value[selectedArticleIndex.value]?.title || "";
-  try {
-    timelineData.value.isExtending = true;
-    const response = await fetch("/api/extendTimeline", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        events,
-        direction,
-        summary,
-        subject
-      })
-    });
-    if (!response.ok) throw new Error("API request failed");
-    const data = await response.json();
-    // Mark new events with a flag for special styling
-    const newEvents = (data.new_events || []).map(e => ({ ...e, isNew: true }));
-    if (direction === 'before') {
-      timelineData.value.events = [...newEvents, ...timelineData.value.events];
-    } else {
-      timelineData.value.events = [...timelineData.value.events, ...newEvents];
-    }
-    timelineData.value.overall_summary = data.new_summary || summary;
-  } catch (error) {
-    console.error("Failed to extend timeline:", error);
-  } finally {
-    timelineData.value.isExtending = false;
-    // extendDirection.value = null; // Removed so indicator works
-  }
-};
-
-// Fetch random Wikipedia articles (no timeline filtering for speed)
-async function fetchArticlesWithEvents(minCount = 7, maxAttempts = 40) {
-  const filtered = [];
-  let attempts = 0;
-  while (filtered.length < minCount && attempts < maxAttempts) {
-    attempts++;
-    const response = await fetch('https://en.wikipedia.org/api/rest_v1/page/random/summary');
-    if (!response.ok) continue;
-    const a = await response.json();
-    const timelineRes = await fetch('/api/generateTimeline', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ articleText: a.extract })
-    });
-    if (!timelineRes.ok) continue;
-    const timelineData = await timelineRes.json();
-    if (timelineData.events && timelineData.events.length > 0) {
-      filtered.push({ title: a.title, content: a.extract });
-      timelines.value[a.title] = timelineData;
-    }
-  }
-  return filtered;
-}
-
-onMounted(async () => {
-  isInitialLoad.value = true;
-  isLoading.value = true;
-  articles.value = [];
-  try {
-    articles.value = await fetchArticlesWithEvents(7, 40);
-  } catch (e) {
-    console.error(e);
-    articles.value = [];
-  } finally {
-    isLoading.value = false;
-    isInitialLoad.value = false;
-  }
-});
-
-const refreshArticles = async () => {
-  isLoading.value = true;
-  isManualRefresh.value = true;
-  try {
-    articles.value = await fetchArticlesWithEvents(7, 40);
-    selectedArticleIndex.value = -1;
-    timelineData.value = null;
-  } catch (e) {
-    console.error(e);
-    articles.value = [];
-  } finally {
-    isLoading.value = false;
-    isManualRefresh.value = false;
-  }
-}
+const {
+  showWelcome,
+  onboardingStep,
+  articles,
+  selectedArticleIndex,
+  selectedEventIndex,
+  timelineData,
+  isLoading,
+  isRemixing,
+  extendDirection,
+  isManualRefresh,
+  isInitialLoad,
+  handleWelcomeClose,
+  handleArticleSelect,
+  handleEventSelect,
+  remixTimeline,
+  handleExtend,
+  refreshArticles
+} = useTimelineApp();
 </script>
 
 <style scoped>
@@ -345,6 +156,11 @@ const refreshArticles = async () => {
   background: transparent;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .fetch-text {
   margin-top: 8px;
   color: #e0e0e0;
@@ -398,10 +214,5 @@ const refreshArticles = async () => {
   margin-top: 24px;
   text-align: center;
   font-weight: 500;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 </style>
