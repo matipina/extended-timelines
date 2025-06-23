@@ -2,24 +2,21 @@
 
 “Time is out of order.” This project explores how generative AI can help us reimagine the concept of non-linear time and alternate histories. By fetching random articles from Wikipedia, the app uses generative AI to create, remix, and extend timelines—revealing unexpected connections and possibilities. Each timeline is a unique, AI-generated narrative, allowing you to explore alternate versions of history and knowledge.
 
+[Visit the website](https://vercel.com/new)
+
 ## Features
 
 - **AI-Generated Timelines:**
   - Fetches random Wikipedia articles and generates detailed timelines of key events using the Gemini API.
   - Only displays articles with meaningful, event-rich timelines (filters out empty results).
 - **Remix & Extend:**
-  - "Remix" generates a new, alternative timeline for the same article using AI.
-  - "Extend Past" and "Extend Future" add more events before or after the current timeline, powered by AI.
+  - "Remix" generates a new, alternative timeline, changing the order of the events found in the original article.
+  - "Extend Past" and "Extend Future" add more events before or after the current timeline, imagining possible events that could happen.
   - Caches generated and remixed timelines for fast navigation.
 - **Smart Article Selection:**
   - Always shows at least 7 articles with valid timelines, fetching more as needed.
   - Minimalistic refresh for new article sets.
-- **API-First Architecture:**
-  - All timeline, remix, and extend logic is handled by serverless API endpoints (see `api/` folder).
-  - Frontend and backend are fully decoupled for flexible deployment.
-- **Modular Codebase:**
-  - Timeline/article state and async logic are encapsulated in composables (`src/composables/useTimelineApp.js`).
-  - Loading UI is handled by a reusable component (`src/components/LoadingIndicator.vue`).
+
 
 ## Getting Started
 
