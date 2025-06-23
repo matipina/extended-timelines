@@ -1,29 +1,66 @@
-# ai-timelines
+# Extended Timelines
 
-This template should help get you started developing with Vue 3 in Vite.
+Extended Timelines is an interactive, AI-powered web app for generating, exploring, and remixing historical timelines of Wikipedia articles. Built with Vue 3 and Vite, it leverages the Gemini API to create rich, event-based timelines and concise summaries for any topic.
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **AI-Generated Timelines:**
+  - Fetches random Wikipedia articles and generates detailed timelines of key events using the Gemini API.
+  - Only displays articles with meaningful, event-rich timelines (filters out empty results).
 
-## Customize configuration
+- **Interactive Timeline Navigation:**
+  - Scrollable, visually engaging timeline with event highlights.
+  - Clickable events for focused exploration.
+  - Modern, responsive UI with smooth transitions and polished design.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Summary & Article Info:**
+  - AI-generated summary for each article, always visible alongside the timeline.
+  - Prominent article title and direct Wikipedia link.
 
-## Project Setup
+- **Remix & Extend:**
+  - "Remix" button generates a new, alternative timeline for the same article.
+  - "Extend Past" and "Extend Future" buttons let you add more events before or after the current timeline, powered by AI.
+  - Spinners and indicators show exactly where new events will appear.
 
-```sh
-npm install
-```
+- **Smart Article Selection:**
+  - Navbar shows at least 7 articles with valid timelines, fetching more as needed.
+  - Pointer/arrow indicators highlight the selected article.
+  - Minimalistic refresh button for new article sets.
 
-### Compile and Hot-Reload for Development
+- **Performance & UX:**
+  - Caches generated timelines and remixes for fast navigation.
+  - Loading and fallback states are clearly indicated with spinners and color cues.
+  - All UI elements are aligned for a clean, modern look.
 
-```sh
-npm run dev
-```
+## Getting Started
 
-### Compile and Minify for Production
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/matipina/extended-timelines.git
+   cd extended-timelines
+   ```
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+3. **Set up your API key:**
+   - Copy `.env.example` to `.env` and add your Gemini API key.
+   - **Never commit your `.env` file!**
+4. **Run the app locally:**
+   ```sh
+   npm run dev
+   ```
+5. **Open in your browser:**
+   - Visit `http://localhost:5173` (or the port shown in your terminal).
 
-```sh
-npm run build
-```
+## Project Structure
+
+- `src/` — Main Vue components and assets
+- `api/` — Serverless functions for timeline generation, remixing, and extension
+- `public/` — Static assets
+
+## Contributing
+Pull requests and suggestions are welcome! Please open an issue to discuss major changes first.
+
+## License
+MIT
