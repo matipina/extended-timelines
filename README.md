@@ -1,8 +1,10 @@
 # Extended Timelines
 
-“Time is out of order.” This project explores how generative AI can help us reimagine the concept of non-linear time and alternate histories. By fetching random articles from Wikipedia, the app uses generative AI to create, remix, and extend timelines—revealing unexpected connections and possibilities. Each timeline is a unique, AI-generated narrative, allowing you to explore alternate versions of history and knowledge.
+*“Time is out of order”* 
 
-[Visit the website](https://vercel.com/new)
+This project explores how generative AI can help us reimagine the concept of non-linear time and alternate histories. By fetching random articles from Wikipedia, the app uses generative AI to create, remix, and extend timelines—revealing unexpected connections and possibilities. Each timeline is a unique, AI-generated narrative, allowing you to explore alternate versions of history and knowledge.
+
+[Visit the website](https://extended-timelines.vercel.app/)
 
 ## Features
 
