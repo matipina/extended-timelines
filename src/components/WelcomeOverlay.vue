@@ -1,16 +1,15 @@
 <template>
   <div class="welcome-overlay">
     <div class="welcome-modal">
-      <h2>Welcome to Extended Timelines!</h2>
+      <h2>Extended Timelines</h2>
       <p>
-        <strong>Extended Timelines</strong> is an interactive, AI-powered app that generates, explores, and remixes historical timelines for Wikipedia articles.<br><br>
+        <strong>Extended Timelines</strong> is an interactive, AI-powered app that explores the concept of non-linear time and alternate histories. By fetching random Wikipedia articles, it uses generative AI to create, remix, and extend timelines—revealing unexpected connections and possibilities. Each timeline is a unique, AI-generated narrative, letting you explore alternate versions of history and knowledge.<br><br>
         <ul>
-          <li>Browse random Wikipedia articles with rich, AI-generated timelines.</li>
-          <li>Click events to explore details and summaries.</li>
-          <li>Use <b>Remix</b> to generate alternative timelines, or <b>Extend Past/Future</b> to add more events.</li>
+          <li>Browse randomly selected Wikipedia articles, or refresh the list to get a new batch.</li>
+          <li>Select an article to generate a timeline based on its historical information.</li>
+          <li><b>Remix</b>: Instantly generate an alternative timeline for the same article, reordering and reinterpreting events using AI.</li>
+          <li><b>Extend Past/Future</b>: Add more events before or after the current timeline, letting AI imagine what else could have happened.</li>
         </ul>
-        <br>
-        Click below to get started!
       </p>
       <button class="welcome-btn" @click="$emit('close')">Try it out</button>
     </div>
