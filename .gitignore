@@ -1,0 +1,69 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules/
+.DS_Store
+dist/
+dist-ssr/
+coverage/
+*.local
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
+.vercel/
+
+# Local env
+.env
+.env.*
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# IDEs
+*.iml
+
+# OS junk
+Thumbs.db
+
+# Test output
+*.test-results
+
+# Dependency directories
+jspm_packages/
+
+# Misc
+*.tgz
+
+# SASS
+.sass-cache/
+
+# Optional REPL history
+.node_repl_history
+
+# Yarn Integrity file
+yarn.lock
+
+# Parcel-bundler cache
+.cache/
