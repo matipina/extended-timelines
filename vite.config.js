@@ -15,4 +15,5 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  base: '/extended-timelines/', // Set to your repo name for GitHub Pages
 })
