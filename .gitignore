@@ -7,20 +7,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+node_modules/
 .DS_Store
-dist
-dist-ssr
-coverage
+dist/
+dist-ssr/
+coverage/
 *.local
 
+# Cypress
 /cypress/videos/
 /cypress/screenshots/
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
@@ -28,4 +29,41 @@ coverage
 *.sw?
 
 *.tsbuildinfo
-.vercel
+.vercel/
+
+# Local env
+.env
+.env.*
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# IDEs
+*.iml
+
+# OS junk
+Thumbs.db
+
+# Test output
+*.test-results
+
+# Dependency directories
+jspm_packages/
+
+# Misc
+*.tgz
+
+# SASS
+.sass-cache/
+
+# Optional REPL history
+.node_repl_history
+
+# Yarn Integrity file
+yarn.lock
+
+# Parcel-bundler cache
+.cache/
